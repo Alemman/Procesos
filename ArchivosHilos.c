@@ -10,33 +10,42 @@
 
 #define MAXLONG 1000
 
-typedef struct {
+typedef struct Dat{
     char caracter;
     char archivo[MAXLONG];
 }Datos;
 
+
 void* cuenta_Caracteres(void*);
-int numCaracter_1 = 0;
-int numCaracter_2 = 0;
+
 
 
 int main(int argc, char *argv[]){
-    pthread_t hilo1, hilo2;
+    
     
     if(argc != 2){
         printf("Dame el nombre de un archivo\n");
         exit(0);
     }
-    Datos datos;
-    strcpy(datos.archivo, argv[1]);
-    datos.caracter = 'a';
-    pthread_create(&hilo1, NULL, cuenta_Caracteres, (void*)datos);
-    datos.caracter = 'b';
-    pthread_create(&hilo2, NULL, cuenta_Caracteres, (void*)datos);
 
-    pthread_join(hilo1, NULL);
-    pthread_join(hilo2, NULL);
-    printf("Factoriales calculados\n");
+    void* numCaracter_1 = 0;
+    void* numCaracter_2 = 0;
+    pthread_t hilo1, hilo2;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    Datos datos;
+    Datos datos2;
+    strcpy(datos.archivo, argv[1]);
+    strcpy(datos2.archivo, argv[1]);
+    datos.caracter = 'a';
+    datos2.caracter = 'b';
+
+    pthread_create(&hilo1, &attr, cuenta_Caracteres, &datos);
+    pthread_create(&hilo2, &attr, cuenta_Caracteres, &datos2);
+
+    pthread_join(hilo1, &numCaracter_1);
+    pthread_join(hilo2, &numCaracter_2);
+    printf("# a or A: %d\n# b or B: %d\n", (int)numCaracter_1, (int)numCaracter_2);
 
     return 0;
 }
@@ -46,12 +55,12 @@ void * cuenta_Caracteres(void* datos){
     char cadena[MAXLONG];
     int fd;
 
-    fd = open(datos.archivo, O_RDONLY);
+    fd = open(((Datos*)datos)->archivo, O_RDONLY);
     while((leidos = read(fd, cadena, MAXLONG)) != 0)
-        for(pos = 0; pos  leidos; pos++)
-            if((cadena[pos] == datos.caracter) || (cadena[pos] == toupper(datos.caracter)))
+        for(pos = 0; pos < leidos; pos++)
+            if((cadena[pos] == ((Datos*)datos)->caracter) || (cadena[pos] == toupper(((Datos*)datos)->caracter)))
                 cont++;
 
     close(fd);
-    return 0;
+    return (void*)cont;
 }
