@@ -11,7 +11,7 @@ void * factorial(void *dato){
         printf("Factorial de %d, resultado parcial %lld\n",n,resultado);
         sleep(random()%3);
         printf("El factorial de %d es %lld \n", n,resultado);
-        pthread exit(NULL);
+        pthread_exit(NULL);
     }
 }
 
