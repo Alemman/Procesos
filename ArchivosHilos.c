@@ -20,9 +20,7 @@ void* cuenta_Caracteres(void*);
 
 
 
-int main(int argc, char *argv[]){
-    
-    
+int main(int argc, char *argv[]){  
     if(argc != 2){
         printf("Dame el nombre de un archivo\n");
         exit(0);
